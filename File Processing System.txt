@@ -1,0 +1,178 @@
+/**
+* Programmer: Kenan Nuray
+*
+* Date: 08/04/2023
+*/
+
+// imports
+import java.util.Scanner;
+import java.util.Random;
+import java.io.*;
+
+// Java class for PA3
+public class NurayK001PA3 {
+
+    public static void main(String[] args) throws IOException {
+        // Variable declarations
+        String fullName = "", firstName, lastName, oneLetter;
+        String[] bigRecordArray = new String[15];
+        String[] tokens;
+        int index = 0, age;
+
+        // Read from the file info.txt
+        File file = new File("info.txt");
+        Scanner scanner = null;
+
+        try {
+            // Open the file for reading
+            scanner = new Scanner(file);
+
+            // Read and process each line of the file
+            System.out.printf("%nInformation read from file:%n");
+            while (scanner.hasNextLine()) {
+                // Read each line and split it into tokens
+                String bigRecord = scanner.nextLine();
+                tokens = bigRecord.split(" ");
+
+                // Check if the record has three tokens (last name, first name, and age)
+                if (tokens.length != 3) {
+                    System.out.printf("Invalid record: %s%n", bigRecord);
+                    continue;
+                }
+
+                // Print the record being read
+                System.out.printf("Reading record %d: %s%n", index, bigRecord);
+
+                // Modify last name
+                lastName = modifyVowels(tokens[0]);
+                lastName = lastName.toUpperCase();
+                oneLetter = lastName.substring(0, 1);
+                lastName = lastName.substring(1).toLowerCase();
+                lastName = oneLetter + lastName;
+
+                // Modify first name
+                firstName = modifyVowels(tokens[1]);
+                firstName = firstName.toUpperCase();
+
+                // Combine first name and last name to form full name
+                fullName = firstName + " " + lastName;
+
+                // Parse the age and update it
+                age = Integer.parseInt(tokens[2]);
+                age = updateAge(age);
+                tokens[2] = Integer.toString(age);
+
+                // Combine full name and age to form the record
+                bigRecordArray[index] = fullName + " " + tokens[2];
+                index++;
+            }
+        } catch (FileNotFoundException e) {
+            // If the file is not found, print an error message
+            System.out.printf("File not found: %s%n", e.getMessage());
+        } catch (NumberFormatException e) {
+            // If there's an error parsing the age, print an error message
+            System.out.printf("Error parsing age: %s%n", e.getMessage());
+        } finally {
+            // Close the file scanner if it was opened successfully
+            if (scanner != null) {
+                scanner.close();
+            }
+        }
+
+        // Print original records
+        System.out.printf("%nModified records:%n");
+        printRecords(bigRecordArray, index);
+
+        // Sort the records
+        selectionSort(bigRecordArray, index);
+
+        // Print sorted records
+        System.out.printf("%nSorted records:%n");
+        printRecords(bigRecordArray, index);
+
+        // Print the end of program message
+        System.out.printf("%nThis program was written by Kenan Nuray.%n" +
+        "End of program.%n");
+    }
+
+    // Method to modify vowels in a name
+    public static String modifyVowels(String name) {
+        int length = name.length();
+        StringBuilder modifiedName = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            char ch = name.charAt(i);
+            // Replace numbers with corresponding vowels
+            switch (ch) {
+                case '0':
+                    modifiedName.append('a');
+                    break;
+                case '1':
+                    modifiedName.append('e');
+                    break;
+                case '2':
+                    modifiedName.append('i');
+                    break;
+                case '3':
+                    modifiedName.append('o');
+                    break;
+                case '4':
+                    modifiedName.append('u');
+                    break;
+                case '5':
+                    modifiedName.append('y');
+                    break;
+                default:
+                    modifiedName.append(ch);
+            }
+        }
+        return modifiedName.toString();
+    }
+
+    // Method to update a person's age
+    public static int updateAge(int age) {
+        Random random = new Random();
+        int randomNumber = random.nextInt(4);
+
+        // Randomly update the age based on a random number
+        switch (randomNumber) {
+            case 0:
+                age += 1;
+                break;
+            case 1:
+                age -= 1;
+                break;
+            case 2:
+                age += 2;
+                break;
+            default:
+                age = 21;
+        }
+        return age;
+    }
+
+    // Method to print records
+    public static void printRecords(String[] records, int index) {
+        for (int i = 0; i < index; i++) {
+            System.out.println("Record " + i + ": " + records[i]);
+        }
+    }
+
+    // Method to perform selection sort on an array of records
+    public static void selectionSort(String[] records, int index) {
+        for (int i = 0; i < index - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < index; j++) {
+                // Compare records based on full name
+                if (records[j].compareTo(records[minIndex]) < 0) {
+                    minIndex = j;
+                }
+            }
+            // Swap the records
+            String temp = records[minIndex];
+            records[minIndex] = records[i];
+            records[i] = temp;
+        }
+    }
+}
+
